@@ -1,15 +1,15 @@
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from fastapi.responses import FileResponse
-from agent import agent
 import asyncio
 import io
-import json
 import os
+import json
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 from agent import agent
 from rss_feed import fetch_dgms_updates
 
@@ -42,6 +42,7 @@ async def query_agent(request: Request):
 async def get_dgms_updates():
     """
     Fetch DGMS updates and classify their danger level using the agent.
+    Returns JSON (title, link, date, and analysis).
     """
     updates = fetch_dgms_updates(limit=5)
 
@@ -51,7 +52,6 @@ async def get_dgms_updates():
         published = item.get("published", "")
 
         # Try to fetch full article content for better analysis
-        content = ""
         try:
             response = await asyncio.to_thread(requests.get, link, timeout=10)
             soup = BeautifulSoup(response.text, "html.parser")
@@ -60,7 +60,6 @@ async def get_dgms_updates():
         except Exception:
             content = "(Could not fetch full article text.)"
 
-        # Construct safety classification prompt
         prompt = (
             f"You are a mining safety officer. Analyze the following DGMS update "
             f"and classify the risk level (High, Medium, Low, or None), and describe "
@@ -82,57 +81,8 @@ async def get_dgms_updates():
             "danger_analysis": output,
         }
 
-    # Run all analyses concurrently
     analyzed_updates = await asyncio.gather(*[analyze_update(u) for u in updates])
     return {"updates": analyzed_updates}
-
-
-# ---------------- AUDIT REPORT ENDPOINT ----------------
-@app.post("/audit_report")
-async def generate_audit_report(request: Request):
-    """
-    Generates an AI-driven mining safety audit report.
-    Input format:
-    {
-        "state": "Jharkhand",
-        "year": "2022",
-        "hazard_type": "gas leak"
-    }
-    Returns a structured JSON containing summary + insights for visualization.
-    """
-    data = await request.json()
-    state = data.get("state", "All States")
-    year = data.get("year", "All Years")
-    hazard_type = data.get("hazard_type", "All Hazards")
-
-    prompt = (
-        f"You are a mining safety audit assistant. Using the DGMS mining accident data, "
-        f"generate a detailed safety audit report for:\n\n"
-        f"State: {state}\nYear: {year}\nHazard Type: {hazard_type}\n\n"
-        f"Provide insights on:\n"
-        f"- Total number of reported incidents\n"
-        f"- Distribution of accidents by category (gas leak, collapse, fire, machinery, etc.)\n"
-        f"- Severity levels (High / Medium / Low)\n"
-        f"- Common root causes\n"
-        f"- Recommendations to improve safety\n"
-        f"- Year-over-year or state-wise trend if applicable\n\n"
-        f"Return your answer as a structured JSON with these keys: "
-        f"'summary', 'statistics', 'recommendations', and 'trend_analysis'."
-    )
-
-    try:
-        result = await asyncio.to_thread(agent.invoke, {"input": prompt})
-        output = result.get("output", "").strip()
-    except Exception as e:
-        output = f"⚠️ Error generating report: {e}"
-
-    return {"audit_report": output}
-
-
-# ---------------- ROOT ENDPOINT ----------------
-@app.get("/")
-async def root():
-    return {"message": "🦺 Digital Mine Safety Officer API is running!"}
 
 
 # ---------------- AUDIT REPORT PDF ENDPOINT ----------------
@@ -167,7 +117,7 @@ async def generate_audit_report_pdf(request: Request):
     except Exception as e:
         output = json.dumps({"summary": f"⚠️ Error generating report: {e}"}, indent=2)
 
-    # Attempt to parse JSON response from agent
+    # Attempt to parse JSON response
     try:
         report_data = json.loads(output)
     except json.JSONDecodeError:
@@ -192,13 +142,13 @@ async def generate_audit_report_pdf(request: Request):
         c.drawString(50, y, section.capitalize())
         y -= 20
         c.setFont("Helvetica", 11)
-        wrapped_text = []
+
         for line in str(text).splitlines():
             while len(line) > 90:
-                wrapped_text.append(line[:90])
+                part = line[:90]
+                c.drawString(60, y, part)
+                y -= 15
                 line = line[90:]
-            wrapped_text.append(line)
-        for line in wrapped_text:
             c.drawString(60, y, line)
             y -= 15
             if y < 100:
@@ -211,15 +161,22 @@ async def generate_audit_report_pdf(request: Request):
     c.save()
     pdf_buffer.seek(0)
 
-    # Save temporarily to file system
-    file_path = "audit_report.pdf"
-    with open(file_path, "wb") as f:
+    filename = f"Audit_Report_{state}_{year}.pdf"
+    with open(filename, "wb") as f:
         f.write(pdf_buffer.getvalue())
 
+    # Return file as downloadable response
     return FileResponse(
-        path=file_path,
-        filename=f"Audit_Report_{state}_{year}.pdf",
+        path=filename,
+        filename=filename,
         media_type="application/pdf"
     )
+
+
+# ---------------- ROOT ENDPOINT ----------------
+@app.get("/")
+async def root():
+    return {"message": "🦺 Digital Mine Safety Officer API is running!"}
+
 
 
