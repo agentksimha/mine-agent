@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Navigation from './components/Navigation';
 import HomePage from './pages/HomePage';
-import AlertsPage from './pages/Alert.jsx';
 import ChatbotPage from './pages/ChatBot.jsx';
 
 function App() {
@@ -12,7 +11,6 @@ function App() {
       <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
       <main>
         {currentPage === 'home' && <HomePage />}
-        {currentPage === 'alerts' && <AlertsPage />}
         {currentPage === 'chatbot' && <ChatbotPage />}
       </main>
     </div>

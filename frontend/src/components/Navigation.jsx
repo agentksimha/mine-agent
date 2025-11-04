@@ -3,7 +3,6 @@ import { Home, AlertTriangle, MessageSquare } from 'lucide-react';
 export default function Navigation({ currentPage, onNavigate }) {
   const navItems = [
     { id: 'home', label: 'Monitoring', icon: Home },
-    { id: 'alerts', label: 'Alerts', icon: AlertTriangle },
     { id: 'chatbot', label: 'Assistant', icon: MessageSquare },
   ];
 

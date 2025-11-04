@@ -102,8 +102,8 @@ export default function ChatbotPage() {
   // ✅ MANUAL AUDIT REPORT BUTTON
   const generateAuditReport = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/audit_report",   // ✅ BACKEND ENDPOINT
+      const res = await axios.post(
+        "http://localhost:8000/audit_report_pdf",   // ✅ BACKEND ENDPOINT
         { responseType: "blob" }
       );
 

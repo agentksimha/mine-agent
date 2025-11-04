@@ -67,25 +67,15 @@ def query_knowledge(query: str):
     chat_history.append((query, response["answer"]))
     return response["answer"]
 
-def run_rules_engine(input_text: str):
-    """Apply rule-based checks (e.g., methane safety)"""
-    if "methane" in input_text.lower():
-        data = {"methane_ppm": 6000}
-    else:
-        data = {"incidents": 1, "methane_ppm": 1000}
-    return evaluate_rules(data)
+
 
 tools = [
     Tool(
         name="KnowledgeQuery",
         func=query_knowledge,
         description="Answer factual or data-driven mining questions."
-    ),
-    Tool(
-        name="SafetyRules",
-        func=run_rules_engine,
-        description="Evaluate mine safety or compliance conditions."
-    ),
+    )
+   
 ]
 
 # ---------------------------------------------------

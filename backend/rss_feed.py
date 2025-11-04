@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-DGMS_RSS_URL = "https://www.dgms.gov.in/rss.xml"  # Replace with correct feed if needed
+DGMS_RSS_URL = "https://www.mining.com/feed/"  # Replace with correct feed if needed
 
 def fetch_dgms_updates(limit: int = 5):
     """
