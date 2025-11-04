@@ -1,8 +1,26 @@
+# Core Web Framework
 fastapi
 uvicorn
+
+# LangChain (Classic + Community)
 langchain
 langchain-community
-faiss-cpu
+langchain-classic
+langchain-huggingface
+langchain-google-genai
+
+# Embeddings & Vector Search
 sentence-transformers
+faiss-cpu
+
+# HTML Parsing & HTTP Requests
+beautifulsoup4
+requests
+
+# Utilities
 pandas
 python-dotenv
+
+# Optional (for async concurrency stability and structured logging)
+aiohttp
+tqdm
