@@ -9,7 +9,11 @@ from rules_engine import evaluate_rules
 # ---------------------------------------------------
 # CONFIG
 # ---------------------------------------------------
-VECTORSTORE_PATH = r"C:\Users\Krishna\Desktop\dsmo\backend\vectorstore"
+import pathlib
+
+# Base directory = this script's parent folder
+BASE_DIR = pathlib.Path(__file__).resolve().parent
+VECTORSTORE_PATH = BASE_DIR / "vectorstore"
 MODEL_NAME = "gemini-2.5-flash"
 os.environ["GOOGLE_API_KEY"] = "AIzaSyCmYJcxJ2_1B1gN4k98HaN-KUrB6PogVbA"
 GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
