@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, FileText, Download } from 'lucide-react';
+ import axios from "axios";
 
 export default function ChatbotPage() {
   const [messages, setMessages] = useState([
@@ -22,69 +23,79 @@ export default function ChatbotPage() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
 
-    const userMessage = {
-      id: Date.now().toString(),
-      text: input,
-      sender: 'user',
+
+const handleSend = async () => {
+  if (!input.trim()) return;
+
+  const userMessage = {
+    id: Date.now().toString(),
+    text: input,
+    sender: "user",
+    timestamp: new Date(),
+  };
+
+  setMessages((prev) => [...prev, userMessage]);
+
+  const query = input;
+  setInput("");
+
+  try {
+    // ✅ Axios POST request to /query
+    const res = await axios.post(
+      "http://localhost:8000/query",
+      { query },
+      { responseType: "blob" } // IMPORTANT: Allows PDF detection
+    );
+
+    const contentType = res.headers["content-type"];
+
+    // ✅ If backend sent a PDF
+    if (contentType && contentType.includes("application/pdf")) {
+      const pdfBlob = new Blob([res.data], { type: "application/pdf" });
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      const botMessage = {
+        id: (Date.now() + 1).toString(),
+        text: "✅ Audit report is ready. Click below to download.",
+        sender: "bot",
+        timestamp: new Date(),
+        pdfUrl: pdfUrl, // ✅ store PDF link
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+      return;
+    }
+
+    // ✅ Otherwise treat it like text/JSON
+    const textData = await new Response(res.data).text();
+    let parsed;
+    try {
+      parsed = JSON.parse(textData);
+    } catch {
+      parsed = { response: textData };
+    }
+
+    const botMessage = {
+      id: (Date.now() + 1).toString(),
+      text: parsed.response || "Sorry, I couldn't understand that.",
+      sender: "bot",
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, botMessage]);
+  } catch (error) {
+    const botMessage = {
+      id: (Date.now() + 1).toString(),
+      text: "⚠️ Server error. Please check backend connection.",
+      sender: "bot",
+      timestamp: new Date(),
+    };
 
-    const query = input;
-    setInput('');
+    setMessages((prev) => [...prev, botMessage]);
+  }
+};
 
-    try {
-      const res = await fetch("YOUR_CHAT_API_URL", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
-      });
-
-      // ✅ Check if response is a PDF file
-      const contentType = res.headers.get("Content-Type");
-
-      if (contentType && contentType.includes("application/pdf")) {
-        const pdfBlob = await res.blob();
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-
-        const botMessage = {
-          id: Date.now().toString(),
-          text: "✅ Audit report is ready. Click below to download.",
-          sender: 'bot',
-          timestamp: new Date(),
-          pdfUrl, // ✅ store PDF link inside message
-        };
-
-        setMessages((prev) => [...prev, botMessage]);
-        return;
-      }
-
-      // ✅ Otherwise assume JSON/text response
-      const data = await res.json();
-
-      const botMessage = {
-        id: Date.now().toString(),
-        text: data?.response || "Sorry, I couldn't understand that.",
-        sender: 'bot',
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
-
-    } catch (error) {
-      const botMessage = {
-        id: Date.now().toString(),
-        text: "⚠️ Server error. Please check backend connection.",
-        sender: 'bot',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botMessage]);
-    }
-  };
 
   // ✅ Manual Audit Report Button
   const handleGenerateReport = async () => {
