@@ -4,7 +4,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_classic.chains import ConversationalRetrievalChain
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-from rules_engine import evaluate_rules
+from dotenv import load_dotenv
 
 # ---------------------------------------------------
 # CONFIG
@@ -14,9 +14,9 @@ import pathlib
 # Base directory = this script's parent folder
 BASE_DIR = pathlib.Path(__file__).resolve().parent
 VECTORSTORE_PATH = BASE_DIR / "vectorstore"
-MODEL_NAME = "gemini-2.5-flash"
-os.environ["GOOGLE_API_KEY"] = "AIzaSyCmYJcxJ2_1B1gN4k98HaN-KUrB6PogVbA"
-GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
+load_dotenv()  # reads .env file from project root
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 if not GOOGLE_API_KEY:
     raise ValueError("❌ GOOGLE_API_KEY not found. Set it as an environment variable.")
@@ -24,6 +24,7 @@ if not GOOGLE_API_KEY:
 # ---------------------------------------------------
 # LLM setup (Gemini)
 # ---------------------------------------------------
+MODEL_NAME = "gemini-2.5-flash"
 llm = ChatGoogleGenerativeAI(
     model=MODEL_NAME,
     google_api_key=GOOGLE_API_KEY,
