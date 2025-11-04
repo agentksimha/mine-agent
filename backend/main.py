@@ -1,4 +1,11 @@
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from fastapi.responses import FileResponse
+from agent import agent
 import asyncio
+import io
+import json
+import os
 import requests
 from bs4 import BeautifulSoup
 from fastapi import FastAPI, Request
@@ -16,6 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # ---------------- QUERY ENDPOINT ----------------
 @app.post("/query")
@@ -79,9 +87,139 @@ async def get_dgms_updates():
     return {"updates": analyzed_updates}
 
 
+# ---------------- AUDIT REPORT ENDPOINT ----------------
+@app.post("/audit_report")
+async def generate_audit_report(request: Request):
+    """
+    Generates an AI-driven mining safety audit report.
+    Input format:
+    {
+        "state": "Jharkhand",
+        "year": "2022",
+        "hazard_type": "gas leak"
+    }
+    Returns a structured JSON containing summary + insights for visualization.
+    """
+    data = await request.json()
+    state = data.get("state", "All States")
+    year = data.get("year", "All Years")
+    hazard_type = data.get("hazard_type", "All Hazards")
+
+    prompt = (
+        f"You are a mining safety audit assistant. Using the DGMS mining accident data, "
+        f"generate a detailed safety audit report for:\n\n"
+        f"State: {state}\nYear: {year}\nHazard Type: {hazard_type}\n\n"
+        f"Provide insights on:\n"
+        f"- Total number of reported incidents\n"
+        f"- Distribution of accidents by category (gas leak, collapse, fire, machinery, etc.)\n"
+        f"- Severity levels (High / Medium / Low)\n"
+        f"- Common root causes\n"
+        f"- Recommendations to improve safety\n"
+        f"- Year-over-year or state-wise trend if applicable\n\n"
+        f"Return your answer as a structured JSON with these keys: "
+        f"'summary', 'statistics', 'recommendations', and 'trend_analysis'."
+    )
+
+    try:
+        result = await asyncio.to_thread(agent.invoke, {"input": prompt})
+        output = result.get("output", "").strip()
+    except Exception as e:
+        output = f"⚠️ Error generating report: {e}"
+
+    return {"audit_report": output}
+
+
 # ---------------- ROOT ENDPOINT ----------------
 @app.get("/")
 async def root():
     return {"message": "🦺 Digital Mine Safety Officer API is running!"}
+
+
+# ---------------- AUDIT REPORT PDF ENDPOINT ----------------
+@app.post("/audit_report_pdf")
+async def generate_audit_report_pdf(request: Request):
+    """
+    Generates an AI-driven mining safety audit report and returns it as a downloadable PDF.
+    """
+    data = await request.json()
+    state = data.get("state", "All States")
+    year = data.get("year", "All Years")
+    hazard_type = data.get("hazard_type", "All Hazards")
+
+    prompt = (
+        f"You are a mining safety audit assistant. Using the DGMS mining accident data, "
+        f"generate a detailed safety audit report for:\n\n"
+        f"State: {state}\nYear: {year}\nHazard Type: {hazard_type}\n\n"
+        f"Provide insights on:\n"
+        f"- Total number of reported incidents\n"
+        f"- Distribution of accidents by category (gas leak, collapse, fire, machinery, etc.)\n"
+        f"- Severity levels (High / Medium / Low)\n"
+        f"- Common root causes\n"
+        f"- Recommendations to improve safety\n"
+        f"- Year-over-year or state-wise trend if applicable\n\n"
+        f"Return your answer as a structured JSON with these keys: "
+        f"'summary', 'statistics', 'recommendations', and 'trend_analysis'."
+    )
+
+    try:
+        result = await asyncio.to_thread(agent.invoke, {"input": prompt})
+        output = result.get("output", "").strip()
+    except Exception as e:
+        output = json.dumps({"summary": f"⚠️ Error generating report: {e}"}, indent=2)
+
+    # Attempt to parse JSON response from agent
+    try:
+        report_data = json.loads(output)
+    except json.JSONDecodeError:
+        report_data = {"summary": output}
+
+    # ---------------- Create PDF ----------------
+    pdf_buffer = io.BytesIO()
+    c = canvas.Canvas(pdf_buffer, pagesize=A4)
+    width, height = A4
+
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(50, height - 50, "🦺 Mining Safety Audit Report")
+
+    c.setFont("Helvetica", 12)
+    c.drawString(50, height - 80, f"State: {state}")
+    c.drawString(50, height - 100, f"Year: {year}")
+    c.drawString(50, height - 120, f"Hazard Type: {hazard_type}")
+
+    c.setFont("Helvetica-Bold", 14)
+    y = height - 160
+    for section, text in report_data.items():
+        c.drawString(50, y, section.capitalize())
+        y -= 20
+        c.setFont("Helvetica", 11)
+        wrapped_text = []
+        for line in str(text).splitlines():
+            while len(line) > 90:
+                wrapped_text.append(line[:90])
+                line = line[90:]
+            wrapped_text.append(line)
+        for line in wrapped_text:
+            c.drawString(60, y, line)
+            y -= 15
+            if y < 100:
+                c.showPage()
+                y = height - 100
+                c.setFont("Helvetica", 11)
+        y -= 20
+        c.setFont("Helvetica-Bold", 14)
+
+    c.save()
+    pdf_buffer.seek(0)
+
+    # Save temporarily to file system
+    file_path = "audit_report.pdf"
+    with open(file_path, "wb") as f:
+        f.write(pdf_buffer.getvalue())
+
+    return FileResponse(
+        path=file_path,
+        filename=f"Audit_Report_{state}_{year}.pdf",
+        media_type="application/pdf"
+    )
 
 
