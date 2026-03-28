@@ -61,11 +61,24 @@ async def get_dgms_updates():
             content = "(Could not fetch full article text.)"
 
         prompt = (
-            f"You are a mining safety officer. Analyze the following DGMS update "
-            f"and classify the risk level (High, Medium, Low, or None), and describe "
-            f"the type of hazard if any (e.g., fire, collapse, explosion, gas leak, etc.).\n\n"
-            f"Title: {title}\nPublished: {published}\nLink: {link}\n"
-            f"Content: {content}"
+           f"You are a mining safety officer. Analyze the following DGMS update "
+    f"and perform the following tasks:\n\n"
+    
+    f"1. Classify the overall risk level as one of: High, Medium, Low, or None.\n"
+    f"2. Identify and describe the type of hazard (e.g., fire, collapse, explosion, gas leak, machinery failure, etc.).\n"
+    f"3. Provide a brief explanation of why this risk level was assigned.\n"
+    f"4. Recommend targeted inspections or preventive measures that mine operators should take to mitigate the risk.\n\n"
+    
+    f"Title: {title}\n"
+    f"Published: {published}\n"
+    f"Link: {link}\n"
+    f"Content: {content}\n\n"
+    
+    f"Return the response in a structured format with clearly labeled sections:\n"
+    f"- Risk Level:\n"
+    f"- Hazard Type:\n"
+    f"- Analysis:\n"
+    f"- Recommended Actions:\n"
         )
 
         try:
