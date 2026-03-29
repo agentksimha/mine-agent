@@ -1,6 +1,6 @@
 export async function getChatResponse(message: string, history: { role: string; parts: { text: string }[] }[]) {
   try {
-    const response = await fetch('http://localhost:8000/query', {
+    const response = await fetch('https://krishnasimha-mine-agent.hf.space/query', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -17,5 +17,6 @@ export async function getChatResponse(message: string, history: { role: string; 
   } catch (error) {
     console.error('Error querying backend:', error);
     return 'Error: Unable to connect to the Mine Agent backend.';
-  }
+  }             
 }
+        

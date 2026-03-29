@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Paperclip, Bot, User, AlertCircle, CheckCircle, Info } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getChatResponse } from '../services/geminiService';
 
@@ -8,21 +8,115 @@ interface Message {
   role: 'ai' | 'user';
   content: string;
   timestamp: string;
-  isReport?: boolean;
 }
+
+// --- Markdown-to-JSX renderer for AI responses ---
+const renderFormattedContent = (content: string): React.ReactNode => {
+  const blocks = content.split(/\n\n+/);
+  
+  return blocks.map((block, blockIdx) => {
+    const trimmed = block.trim();
+    if (!trimmed) return null;
+
+    const lines = trimmed.split('\n');
+    const isNumberedList = lines.every(l => /^\s*\d+[\.\)]\s+/.test(l.trim()) || !l.trim());
+    const isBulletList = lines.every(l => /^\s*[-•*]\s+/.test(l.trim()) || !l.trim());
+
+    if (isNumberedList || isBulletList) {
+      return (
+        <ol key={blockIdx} className={`space-y-2 my-3 ${isNumberedList ? 'list-decimal' : 'list-disc'} pl-5`}>
+          {lines.filter(l => l.trim()).map((line, i) => {
+            const text = line.replace(/^\s*(\d+[\.\)]|[-•*])\s+/, '');
+            return (
+              <li key={i} className="text-[14px] text-slate-200 leading-relaxed">
+                {renderInlineMarkdown(text)}
+              </li>
+            );
+          })}
+        </ol>
+      );
+    }
+
+    const headingMatch = trimmed.match(/^\*\*(.+?)\*\*:?\s*([\s\S]*)$/);
+    if (headingMatch && !headingMatch[2].includes('\n')) {
+      return (
+        <div key={blockIdx} className="my-2">
+          <span className="font-bold text-white text-[15px]">{headingMatch[1]}</span>
+          {headingMatch[2] && <span className="text-slate-300 text-[14px]"> {headingMatch[2]}</span>}
+        </div>
+      );
+    }
+
+    return (
+      <p key={blockIdx} className="text-[14px] text-slate-200 leading-[1.8] my-2">
+        {renderInlineMarkdown(trimmed)}
+      </p>
+    );
+  });
+};
+
+const renderInlineMarkdown = (text: string): React.ReactNode => {
+  const parts: React.ReactNode[] = [];
+  let remaining = text;
+  let key = 0;
+
+  while (remaining.length > 0) {
+    const boldMatch = remaining.match(/\*\*(.+?)\*\*/);
+    const italicMatch = remaining.match(/(?<!\*)\*([^*]+?)\*(?!\*)/);
+    const codeMatch = remaining.match(/`([^`]+?)`/);
+
+    let earliest: { match: RegExpMatchArray; type: string } | null = null;
+    for (const [type, match] of [['bold', boldMatch], ['italic', italicMatch], ['code', codeMatch]] as const) {
+      if (match && match.index !== undefined) {
+        if (!earliest || match.index < earliest.match.index!) {
+          earliest = { match, type };
+        }
+      }
+    }
+
+    if (!earliest) {
+      parts.push(remaining);
+      break;
+    }
+
+    const { match, type } = earliest;
+    const idx = match.index!;
+
+    if (idx > 0) {
+      parts.push(remaining.substring(0, idx));
+    }
+
+    if (type === 'bold') {
+      parts.push(<strong key={key++} className="font-semibold text-white">{match[1]}</strong>);
+    } else if (type === 'italic') {
+      parts.push(<em key={key++} className="italic text-slate-300">{match[1]}</em>);
+    } else if (type === 'code') {
+      parts.push(
+        <code key={key++} className="bg-white/10 text-amber-300 px-1.5 py-0.5 rounded text-[13px] font-mono">
+          {match[1]}
+        </code>
+      );
+    }
+
+    remaining = remaining.substring(idx + match[0].length);
+  }
+
+  return parts;
+};
 
 export const ChatScreen: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'ai',
-      content: 'System initialized. I have full access to current biometric sensor data, air quality readings from the South Shaft, and the last 24 hours of incident reports. How can I assist your safety inspection today?',
-      timestamp: '09:00 AM'
+      content: 'System initialized. I have full access to DGMS accident records, safety reports, and mining incident data (2016–2022). How can I assist your safety analysis today?',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -56,136 +150,131 @@ export const ChatScreen: React.FC = () => {
         id: (Date.now() + 1).toString(),
         role: 'ai',
         content: response,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isReport: response.includes('Analysis') || response.includes('Report')
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
       setMessages(prev => [...prev, aiMsg]);
     } catch (error) {
       console.error(error);
+      const errMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'ai',
+        content: 'Sorry, I encountered an error while processing your request. Please try again.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, errMsg]);
     } finally {
       setIsTyping(false);
     }
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] pt-8">
-      {/* Header Info */}
-      <div className="mb-8 flex items-center justify-between px-6">
-        <div className="flex items-center gap-4">
-
-          <div>
-            <h1 className="font-headline text-xl font-semibold tracking-tight">Digital Mine Safety Officer</h1>
-
-          </div>
-        </div>
-
+    <div className="flex flex-col h-[calc(100vh-80px)] max-w-4xl mx-auto px-4">
+      {/* Title */}
+      <div className="py-4 flex-shrink-0">
+        <h1 className="font-headline text-xl font-semibold tracking-tight text-white">Digital Mine Safety Officer</h1>
       </div>
 
-      {/* Chat Area */}
-      <div ref={scrollRef} className="flex-grow chat-scroll-area overflow-y-auto space-y-8 px-6 pb-32">
+      {/* Scrollable Messages Area */}
+      <div ref={scrollRef} className="flex-grow overflow-y-auto space-y-4 pr-2 chat-scroll-area">
         <AnimatePresence initial={false}>
           {messages.map((msg) => (
             <motion.div
               key={msg.id}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`flex gap-4 ${msg.role === 'user' ? 'max-w-[85%] ml-auto flex-row-reverse' : 'max-w-[85%]'}`}
+              transition={{ duration: 0.3 }}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border ${msg.role === 'ai'
-                  ? 'bg-surface-container-highest border-outline-variant/20 text-tertiary'
-                  : 'bg-primary/10 border-primary/20 text-primary'
+              <div className={`max-w-[85%] md:max-w-[75%]`}>
+                <div className={`px-5 py-4 rounded-2xl ${
+                  msg.role === 'user'
+                    ? 'bg-amber-600/90 text-white rounded-br-md'
+                    : 'bg-[#1A1A1F] border border-white/[0.06] text-slate-200 rounded-bl-md'
                 }`}>
-
-              </div>
-              <div className={`space-y-2 ${msg.role === 'user' ? 'text-right' : ''}`}>
-                <div className={`p-5 rounded-2xl shadow-sm text-left border ${msg.role === 'ai'
-                    ? 'bg-surface-container-low border-outline-variant/5 rounded-tl-none'
-                    : 'bg-primary/5 border-primary/10 rounded-tr-none'
-                  }`}>
-                  {msg.isReport ? (
-                    <div className="space-y-4">
-                      <h3 className="font-headline font-bold text-lg text-tertiary">Zone B Air Quality Analysis</h3>
-                      <p className="text-sm text-slate-300">Analysis indicates a sustained increase in PM10 particulates near the Conveyor 04 junction.</p>
-                      <ul className="space-y-3 text-sm">
-                        <li className="flex items-start gap-3">
-                          <AlertCircle className="text-primary w-4 h-4 mt-1" />
-                          <span><strong>Peak recorded:</strong> 2.4mg/m³ at 07:15 AM (Exceeds Tier 1 threshold).</span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <CheckCircle className="text-tertiary w-4 h-4 mt-1" />
-                          <span><strong>Current status:</strong> 1.1mg/m³ (Falling after automated suppression activation).</span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <Info className="text-slate-500 w-4 h-4 mt-1" />
-                          <span><strong>Recommendation:</strong> Schedule nozzle maintenance for the West spray bar within 12 hours.</span>
-                        </li>
-                      </ul>
+                  {msg.role === 'ai' ? (
+                    <div className="prose-invert">
+                      {renderFormattedContent(msg.content)}
                     </div>
                   ) : (
-                    <p className="text-on-surface leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                    <p className="text-[14px] leading-relaxed">{msg.content}</p>
                   )}
                 </div>
-                <span className="text-[10px] font-label text-slate-600 px-1 uppercase tracking-wider">
-                  {msg.role === 'ai' ? 'SENTINEL AI' : 'YOU'} • {msg.timestamp}
-                </span>
+
+                <div className={`mt-1 px-1 ${msg.role === 'user' ? 'text-right' : ''}`}>
+                  <span className="text-[10px] text-slate-600 tracking-wider uppercase">
+                    {msg.timestamp}
+                  </span>
+                </div>
               </div>
             </motion.div>
           ))}
         </AnimatePresence>
 
+        {/* Typing indicator */}
         {isTyping && (
-          <div className="flex gap-4 max-w-[85%]">
-           
-            <div className="bg-surface-container-low px-4 py-3 rounded-2xl rounded-tl-none border border-outline-variant/5 flex items-center gap-2">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-start"
+          >
+            <div className="bg-[#1A1A1F] border border-white/[0.06] px-5 py-4 rounded-2xl rounded-bl-md flex items-center gap-3">
               <div className="flex gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-tertiary animate-bounce [animation-delay:-0.3s]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-tertiary animate-bounce [animation-delay:-0.15s]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-tertiary animate-bounce" />
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-bounce [animation-delay:-0.3s]" />
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-bounce [animation-delay:-0.15s]" />
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-bounce" />
               </div>
-              <span className="text-xs font-label text-slate-500 uppercase tracking-widest ml-2">AI is processing logs...</span>
+              <span className="text-xs text-slate-500 tracking-wide">Analyzing...</span>
             </div>
-          </div>
+          </motion.div>
         )}
+
+        <div ref={bottomRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="fixed bottom-0 w-full bg-surface/80 backdrop-blur-xl border-t border-outline-variant/10 left-0">
-        <div className="max-w-5xl mx-auto px-6 py-6 w-full">
-          <div className="flex flex-wrap gap-2 mb-4 justify-center md:justify-start">
-            {['Latest safety report for Zone B', 'Summarize recent near-misses', 'Compliance checklist for MSHA Section 3'].map((query) => (
-              <button
-                key={query}
-                onClick={() => setInput(query)}
-                className="px-4 py-2 rounded-full bg-surface-container-high hover:bg-surface-bright text-xs font-medium text-on-surface border border-outline-variant/20 transition-all hover:border-tertiary/50"
-              >
-                {query}
-              </button>
-            ))}
-          </div>
-          <div className="relative group">
-            <div className="absolute inset-0 bg-tertiary/5 rounded-2xl blur-xl transition-opacity opacity-0 group-focus-within:opacity-100" />
-            <div className="relative gap-5 flex items-center bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-2 group-focus-within:border-tertiary/50 transition-all">
-              <button className="p-3 text-slate-500 hover:text-tertiary transition-colors">
-                <Paperclip className="w-5 h-5" />
-              </button>
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-on-surface text-sm py-3 px-2 placeholder:text-slate-600"
-                placeholder="Inquire about mine safety protocols or real-time data..."
-              />
-              <button
-                onClick={handleSend}
-                className="bg-gradient-to-r from-primary to-primary-container text-on-primary p-3 rounded-xl flex items-center justify-center hover:shadow-[0_0_20px_rgba(255,107,0,0.3)] transition-all active:scale-95"
-              >
+      {/* Input Area — pinned at bottom of container */}
+      <div className="flex-shrink-0 py-4">
+        {/* Quick prompts */}
+        <div className="flex flex-wrap gap-2 mb-3 justify-center">
+          {[
+            'Methane accidents in 2021',
+            'Summarize recent incidents',
+            'Safety recommendations for underground mines'
+          ].map((query) => (
+            <button
+              key={query}
+              onClick={() => setInput(query)}
+              className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-[11px] font-medium text-slate-400 hover:text-white border border-white/10 hover:border-amber-500/30 transition-all"
+            >
+              {query}
+            </button>
+          ))}
+        </div>
+
+        {/* Input field */}
+        <div className="relative">
+          <div className="absolute -inset-1 bg-amber-500/10 rounded-2xl blur-xl opacity-0 focus-within:opacity-100 transition-opacity pointer-events-none" />
+          <div className="relative flex items-center bg-[#141417] border border-white/10 rounded-xl focus-within:border-amber-500/40 transition-all">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              className="flex-grow bg-transparent border-none focus:outline-none focus:ring-0 text-white text-sm py-4 px-5 placeholder:text-slate-600"
+              placeholder="Ask about mine safety data, incidents, regulations..."
+            />
+            <button
+              onClick={handleSend}
+              disabled={!input.trim() || isTyping}
+              className="m-1.5 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 disabled:text-slate-500 text-white p-3 rounded-lg flex items-center justify-center transition-all active:scale-95 disabled:cursor-not-allowed"
+            >
+              {isTyping ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
                 <Send className="w-5 h-5" />
-              </button>
-            </div>
+              )}
+            </button>
           </div>
-         
         </div>
       </div>
     </div>

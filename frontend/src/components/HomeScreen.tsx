@@ -1,205 +1,358 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Shield, ArrowRight, Brain, Bell, MessageSquare, FileCheck, Network, Activity, AlertOctagon, Droplets } from 'lucide-react';
+import { ArrowRight, Brain, Bell, FileCheck, Sparkles } from 'lucide-react';
+import PixelBlast from '../designs/homebg';
+import Particles from '../designs/particle';
+
+// Reusable fade-up animation variant
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (delay: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, delay, ease: [0.25, 0.4, 0.25, 1] }
+  })
+};
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: (delay: number = 0) => ({
+    opacity: 1,
+    transition: { duration: 0.8, delay, ease: 'easeOut' }
+  })
+};
+
+const scaleUp = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: (delay: number = 0) => ({
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.6, delay, ease: [0.25, 0.4, 0.25, 1] }
+  })
+};
+
+const slideInLeft = {
+  hidden: { opacity: 0, x: -60 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: [0.25, 0.4, 0.25, 1] } }
+};
+
+const slideInRight = {
+  hidden: { opacity: 0, x: 60 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: [0.25, 0.4, 0.25, 1] } }
+};
+
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 }
+  }
+};
+
+const cardItem = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.25, 0.4, 0.25, 1] }
+  }
+};
+
+const listItem = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, ease: 'easeOut' }
+  }
+};
 
 export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => {
   return (
     <div className="relative overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://picsum.photos/seed/mine-industrial/1920/1080?grayscale&blur=2" 
-            alt="Mine" 
-            className="w-full h-full object-cover opacity-30 contrast-125"
-            referrerPolicy="no-referrer"
+
+      {/* ═══════════════════ HERO ═══════════════════ */}
+      <section className="relative min-h-screen flex items-center justify-center px-8">
+        <div className="absolute inset-0" style={{ zIndex: 0 }}>
+          <PixelBlast
+            variant="square"
+            pixelSize={4}
+            color="#FF8C00"
+            patternScale={2}
+            patternDensity={1}
+            pixelSizeJitter={0}
+            enableRipples
+            rippleSpeed={0.4}
+            rippleThickness={0.12}
+            rippleIntensityScale={1.5}
+            liquid={false}
+            liquidStrength={0.12}
+            liquidRadius={1.2}
+            liquidWobbleSpeed={5}
+            speed={0.5}
+            edgeFade={0.25}
+            transparent
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-surface via-transparent to-surface" />
         </div>
 
-        <div className="max-w-7xl w-full px-12 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center z-10 py-32">
-          <motion.div 
+        <div className="absolute inset-0 bg-black/70" style={{ zIndex: 10 }} />
+
+        <div className="relative max-w-6xl w-full text-center space-y-8" style={{ zIndex: 20 }}>
+          <motion.h1
+            initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.9, ease: [0.25, 0.4, 0.25, 1] }}
+            className="text-5xl md:text-7xl font-extrabold leading-tight"
+          >
+            Intelligent Mine Safety
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.7 }}
+              className="block text-primary"
+            >
+              Powered by Agentic AI
+            </motion.span>
+          </motion.h1>
+
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-10"
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="text-lg text-gray-300 max-w-2xl mx-auto"
           >
-          
-            
-            <h1 className="font-headline font-extrabold text-6xl md:text-[5.5rem] leading-[0.95] tracking-tight text-on-surface">
-              Welcome to <br/>
-              <span className="bg-gradient-to-r from-primary via-primary-container to-primary text-transparent bg-clip-text">Mine Agent</span>
-            </h1>
-            
-            <p className="font-body text-xl text-slate-400 max-w-xl leading-relaxed font-light">
-              The definitive AI-powered industrial cockpit for high-stakes mining oversight. Mine Agent leverages deep-learning neural networks to anticipate geological hazards before they materialize, ensuring unmatched safety for your workforce.
-            </p>
-            
-            <div className="flex flex-wrap gap-6 pt-4">
-              <button 
-                onClick={onLaunch}
-                className="safety-glow text-on-primary px-10 py-5 rounded-2xl font-black text-sm tracking-[0.2em] uppercase flex items-center gap-4 hover:translate-x-1 transition-all"
-              >
-                    Check  Alerts
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
-          </motion.div>
+            Transform DGMS accident records into actionable intelligence. Detect risks early, automate safety audits, and gain real-time insights across mining operations.
+          </motion.p>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative hidden lg:block h-[600px]"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+            className="flex justify-center gap-4 pt-4"
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
-            </div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[420px] glass-panel rounded-3xl shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-60" />
-              <div className="p-8 flex flex-col justify-between h-full">
-                <div className="flex justify-between items-start">
-                  <div className="px-3 py-1 bg-primary/20 rounded border border-primary/30 text-[10px] font-bold text-primary tracking-widest">REAL-TIME TELEMETRY</div>
-                  <div className="flex gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500" />
-                    <div className="w-2 h-2 rounded-full bg-white/20" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-end">
-                  <div className="space-y-1">
-                    <div className="text-[32px] font-headline font-extrabold text-on-surface tracking-tighter">0.024<span className="text-lg opacity-50">μS</span></div>
-                    <div className="text-[9px] font-bold text-slate-500 tracking-[0.3em] uppercase">Seismic Variance</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-40 px-12 relative overflow-hidden bg-surface-container-lowest">
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-24 space-y-6">
-            <div className="inline-flex items-center gap-4 mb-2">
-              <div className="w-10 h-[1px] bg-primary-container" />
-              <span className="text-primary-container font-bold tracking-[0.5em] text-[10px] uppercase">Core Capabilities</span>
-              <div className="w-10 h-[1px] bg-primary-container" />
-            </div>
-            <h2 className="font-headline font-extrabold text-5xl md:text-6xl tracking-tight">Engineered for Extremes</h2>
-            <p className="text-slate-400 text-xl max-w-2xl mx-auto font-light leading-relaxed">Precision safety protocols integrated into every facet of the subterranean ecosystem.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div className="md:col-span-7 bg-surface-container-low p-10 rounded-[2.5rem] border border-white/5 space-y-8">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                <Brain className="text-primary w-8 h-8" />
-              </div>
-              <div className="space-y-4">
-                <h4 className="font-headline font-extrabold text-3xl">Neural Risk Assessment</h4>
-                <p className="text-slate-400 text-lg font-light leading-relaxed">Continuous processing of high-fidelity structural and environmental data streams via deep-learning clusters.</p>
-              </div>
-              <div className="flex gap-8 pt-6 border-t border-white/5">
-                <div>
-                  <div className="text-[10px] font-bold text-primary tracking-widest uppercase">LATENCY</div>
-                  <div className="text-xl font-bold">0.4ms</div>
-                </div>
-                <div>
-                  <div className="text-[10px] font-bold text-primary tracking-widest uppercase">NODES</div>
-                  <div className="text-xl font-bold">14.2k</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="md:col-span-5 space-y-6">
-              <div className="bg-surface-container-low p-10 rounded-[2.5rem] border border-white/5 h-full flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <div className="w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center border border-tertiary/20">
-                    <Bell className="text-tertiary w-6 h-6" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse" />
-                    <span className="text-[9px] font-bold text-tertiary uppercase tracking-widest">Live Edge Status</span>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-headline font-bold text-2xl mb-2">Global Edge Alerts</h4>
-                  <p className="text-slate-500 text-sm">Millisecond-grade critical notifications dispatched to hardware nodes globally.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Omnipresent Oversight */}
-      <section className="py-48 bg-surface overflow-hidden">
-        <div className="max-w-7xl mx-auto px-12 text-center mb-32">
-          <div className="px-5 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-[10px] font-black tracking-[0.4em] uppercase inline-block mb-8">The Crown Jewel</div>
-          <h2 className="font-headline font-extrabold text-6xl md:text-7xl tracking-tighter">Omnipresent Oversight</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto text-xl font-light mt-8">Experience the synergy of high-fidelity monitoring and predictive intelligence.</p>
-        </div>
-
-        <div className="relative h-[600px] flex justify-center items-center">
-          <div className="absolute z-30 flex flex-col items-center group cursor-pointer">
-            <div className="w-24 h-24 rounded-full glass-panel bg-primary/20 flex items-center justify-center border-primary/40 relative">
-              <div className="absolute inset-0 rounded-full border border-primary/50 animate-ping" />
-              <Network className="text-primary w-10 h-10" />
-            </div>
-          </div>
-          
-          <div className="absolute w-[850px] h-[550px] bg-primary/5 rounded-[4rem] blur-[100px] -z-10" />
-          
-          {/* Floating UI Cards */}
-          <div className="absolute left-1/4 top-1/4 glass-panel p-6 rounded-2xl w-56 border border-white/10 animate-float">
-            <div className="flex items-center gap-3 mb-4">
-              <Activity className="text-tertiary w-4 h-4" />
-              <span className="text-[11px] font-bold tracking-widest text-slate-500 uppercase">System Integrity</span>
-            </div>
-            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden mb-2">
-              <div className="h-full bg-tertiary w-[94%]" />
-            </div>
-            <div className="flex justify-between text-[10px] font-bold text-tertiary">
-              <span>OPERATIONAL</span>
-              <span>94%</span>
-            </div>
-          </div>
-
-          <div className="absolute right-1/4 bottom-1/4 glass-panel p-6 rounded-2xl w-64 border border-error/30 animate-float" style={{ animationDelay: '2s' }}>
-            <div className="flex items-center gap-3 mb-4">
-              <AlertOctagon className="text-error w-4 h-4" />
-              <span className="text-[11px] font-bold tracking-widest text-error uppercase">Critical Anomalies</span>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-error/20 flex items-center justify-center">
-                  <Droplets className="text-error w-4 h-4" />
-                </div>
-                <div className="text-xs font-bold">Abnormal seepage in Sector 12</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-40 px-12 bg-surface-container-low">
-        <div className="max-w-6xl mx-auto rounded-[4rem] bg-surface-container-lowest p-24 border border-white/10 relative overflow-hidden flex flex-col items-center text-center shadow-2xl">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full -mr-64 -mt-64" />
-          <div className="relative z-10 space-y-10">
-            <h2 className="font-headline font-extrabold text-6xl md:text-7xl mb-8 tracking-tighter">
-              Secure Your <br/>Subterranean Legacy
-            </h2>
-            <p className="text-slate-400 text-xl max-w-2xl mb-12 font-light leading-relaxed">
-              Join the vanguard of the world's most elite industrial operations. Deploy Sentinel Oversight and gain absolute visibility over your workforce.
-            </p>
-            <button 
+            <button
               onClick={onLaunch}
-              className="safety-glow text-on-primary px-14 py-6 rounded-3xl font-black text-sm tracking-[0.3em] uppercase hover:scale-105 transition-all shadow-2xl"
+              className="group relative px-8 py-4 rounded-xl bg-amber-600 text-white font-semibold flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
             >
-              Acquire System Access
+              Check Alerts
+              <ArrowRight className="group-hover:translate-x-1 transition" />
+              <span className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition" />
             </button>
-          </div>
+          </motion.div>
         </div>
       </section>
+
+      {/* ═══════════════════ ABOUT ═══════════════════ */}
+      <section className="py-16 px-8 bg-black text-white">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+
+          {/* Image Stack */}
+          <motion.div
+            className="relative h-[450px]"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <motion.img
+              variants={fadeUp}
+              custom={0}
+              src="https://res.cloudinary.com/dad2siqxd/image/upload/v1774815723/mineandtechnology_hkecuh.jpg"
+              className="absolute w-72 h-96 object-cover rounded-2xl shadow-xl rotate-[-10deg] left-0 top-10"
+            />
+            <motion.img
+              variants={fadeUp}
+              custom={0.15}
+              src="https://res.cloudinary.com/dad2siqxd/image/upload/v1774815723/mine1_jfm1so.jpg"
+              className="absolute w-72 h-96 object-cover rounded-2xl shadow-xl rotate-[6deg] left-24 top-0"
+            />
+            <motion.img
+              variants={fadeUp}
+              custom={0.3}
+              src="https://res.cloudinary.com/dad2siqxd/image/upload/v1774815723/mineai_qicn82.jpg"
+              className="absolute w-72 h-96 object-cover rounded-2xl shadow-xl rotate-[14deg] left-48 top-12"
+            />
+          </motion.div>
+
+          {/* Content */}
+          <motion.div
+            className="space-y-6"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <motion.div variants={fadeUp} custom={0} className="inline-block px-4 py-1 border rounded-full text-sm font-semibold">
+              ABOUT PLATFORM
+            </motion.div>
+
+            <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl md:text-5xl font-extrabold leading-tight">
+              Transforming Mining Safety Through AI
+            </motion.h2>
+
+            <motion.p variants={fadeUp} custom={0.2} className="text-white-600 leading-relaxed">
+              Mine Agent leverages DGMS accident records (2016–2022) and advanced NLP techniques to digitize, analyze, and extract critical safety insights. The platform enables faster decision-making, improved hazard detection, and proactive risk management.
+            </motion.p>
+
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="grid grid-cols-2 gap-6 pt-4"
+            >
+              <motion.div variants={cardItem} className="p-6 rounded-xl text-white bg-transparent border border-white/10 hover:border-white/20 transition-colors">
+                <h4 className="font-bold text-lg mb-2">Our Vision</h4>
+                <p className="text-sm text-white">
+                  To create safer mines through intelligent, data-driven insights and automation.
+                </p>
+              </motion.div>
+
+              <motion.div variants={cardItem} className="p-6 rounded-xl text-white bg-transparent border border-white/10 hover:border-white/20 transition-colors">
+                <h4 className="font-bold text-lg mb-2">Our Mission</h4>
+                <p className="text-sm text-white">
+                  To reduce mining accidents by enabling predictive analysis and real-time safety monitoring.
+                </p>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+
+        </div>
+      </section>
+
+      {/* ═══════════════════ CORE CAPABILITIES ═══════════════════ */}
+      <section className="py-24 px-8 bg-black">
+        <motion.div
+          className="max-w-6xl mx-auto text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+        >
+          <motion.h2 variants={fadeUp} custom={0} className="text-4xl font-bold mb-4">Core Capabilities</motion.h2>
+          <motion.p variants={fadeUp} custom={0.1} className="text-gray-400 max-w-2xl mx-auto">
+            Built to digitize and analyze DGMS mining accident data using advanced AI techniques.
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          {[
+            { Icon: Brain, title: 'NLP-Based Analysis', desc: 'Extract structured insights from hundreds of DGMS accident reports to uncover hidden risk patterns.' },
+            { Icon: Bell, title: 'Real-Time Alerts', desc: 'Detect anomalies and generate instant alerts on emerging safety threats.' },
+            { Icon: FileCheck, title: 'Automated Reports', desc: 'Generate detailed compliance and safety audit reports automatically.' },
+            { Icon: Sparkles, title: 'Predictive Insights', desc: 'Forecast accident trends and recommend preventive safety measures.' }
+          ].map((card) => (
+            <motion.div
+              key={card.title}
+              variants={cardItem}
+              whileHover={{ y: -6, transition: { duration: 0.25 } }}
+              className="p-8 rounded-2xl bg-white/5 border border-white/10 shadow-[0_0_30px_rgba(255,140,0,0.15)] hover:shadow-[0_0_40px_rgba(255,140,0,0.25)] transition-shadow"
+            >
+              <card.Icon className="mb-4 text-primary w-6 h-6" />
+              <h3 className="text-xl font-bold mb-2">{card.title}</h3>
+              <p className="text-gray-400 text-sm">{card.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* ═══════════════════ AI SAFETY OFFICER ═══════════════════ */}
+      <section className="py-32 px-8 bg-gradient-to-b from-transparent to-black/40">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+
+          <motion.div
+            className="space-y-6"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <motion.h2 variants={fadeUp} custom={0} className="text-4xl font-bold">Your AI Safety Officer</motion.h2>
+            <motion.p variants={fadeUp} custom={0.1} className="text-gray-400">
+              Move beyond dashboards. Mine Agent acts as an intelligent assistant that understands, analyzes, and responds to mining safety data in real time.
+            </motion.p>
+
+            <motion.ul
+              className="space-y-4 text-gray-300"
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              {[
+                'Ask questions like: "Methane accidents in 2021?"',
+                'Get instant summaries and root-cause insights',
+                'Receive actionable safety recommendations',
+                'Continuous monitoring of DGMS and reports'
+              ].map((text) => (
+                <motion.li key={text} variants={listItem} className="flex items-start gap-3">
+                  <span className="mt-1.5 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
+                  {text}
+                </motion.li>
+              ))}
+            </motion.ul>
+          </motion.div>
+
+          {/* Safety Image with Orange Glow */}
+          <motion.div
+            className="relative flex items-center justify-center"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={scaleUp}
+            custom={0.2}
+          >
+            <div className="absolute inset-0 bg-orange-500/20 rounded-2xl blur-[60px]" />
+            <motion.img
+              src="https://res.cloudinary.com/dad2siqxd/image/upload/v1774815965/safety_sxbepd.jpg"
+              className="relative w-full max-w-md rounded-2xl object-cover shadow-[0_0_60px_rgba(255,140,0,0.4)]"
+              whileHover={{ scale: 1.03, transition: { duration: 0.3 } }}
+            />
+          </motion.div>
+
+        </div>
+      </section>
+
+      {/* ═══════════════════ CTA ═══════════════════ */}
+      <section className="relative py-24 px-8 text-center overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ zIndex: 0 }}
+          src="https://res.cloudinary.com/dad2siqxd/video/upload/v1774816351/InShot_20251230_233754311_hx6gie.mp4"
+        />
+        <div className="absolute inset-0 bg-black/70" style={{ zIndex: 1 }} />
+
+        <motion.div
+          className="relative max-w-3xl mx-auto space-y-6"
+          style={{ zIndex: 10 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+        >
+          <motion.h2 variants={fadeUp} custom={0} className="text-4xl font-bold">
+            Start Exploring Mine Safety Intelligence
+          </motion.h2>
+          <motion.p variants={fadeUp} custom={0.15} className="text-gray-400">
+            Unlock insights from historical mining accidents and enhance safety with AI-driven decisions.
+          </motion.p>
+
+          <motion.div variants={fadeUp} custom={0.3}>
+            <button
+              onClick={onLaunch}
+              className="px-10 py-4 rounded-xl bg-orange-500 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-[0_0_30px_rgba(255,140,0,0.3)] transition-all"
+            >
+              Chat with AI Safety Officer
+            </button>
+          </motion.div>
+        </motion.div>
+      </section>
+
     </div>
   );
 };
