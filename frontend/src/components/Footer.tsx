@@ -4,10 +4,10 @@ import { Shield, Brain, FileText, AlertTriangle } from "lucide-react";
 export const Footer: React.FC = () => {
   return (
     <footer className="w-full border-t border-white/5 bg-[#0A0A0B] mt-auto">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-10 md:py-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
 
         {/* Brand Section */}
-        <div className="space-y-4">
+        <div className="space-y-4 col-span-2 md:col-span-1">
           <h2 className="text-xl font-bold text-white font-headline">
             MineRakshak
           </h2>

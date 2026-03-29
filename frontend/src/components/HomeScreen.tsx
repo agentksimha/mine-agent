@@ -72,7 +72,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
     <div className="relative overflow-hidden">
 
       {/* ═══════════════════ HERO ═══════════════════ */}
-      <section className="relative min-h-screen flex items-center justify-center px-8">
+      <section className="relative min-h-screen flex items-center justify-center px-4 md:px-8">
         <div className="absolute inset-0" style={{ zIndex: 0 }}>
           <PixelBlast
             variant="square"
@@ -102,7 +102,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
             initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.9, ease: [0.25, 0.4, 0.25, 1] }}
-            className="text-5xl md:text-7xl font-extrabold leading-tight"
+            className="text-3xl sm:text-5xl md:text-7xl font-extrabold leading-tight"
           >
             Intelligent Mine Safety
             <motion.span
@@ -119,7 +119,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-lg text-gray-300 max-w-2xl mx-auto"
+            className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto px-2"
           >
             Transform DGMS accident records into actionable intelligence. Detect risks early, automate safety audits, and gain real-time insights across mining operations.
           </motion.p>
@@ -132,7 +132,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
           >
             <button
               onClick={onLaunch}
-              className="group relative px-8 py-4 rounded-xl bg-amber-600 text-white font-semibold flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              className="group relative px-6 md:px-8 py-3 md:py-4 rounded-xl bg-amber-600 text-white font-semibold flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all text-sm md:text-base"
             >
               Check Alerts
               <ArrowRight className="group-hover:translate-x-1 transition" />
@@ -143,12 +143,12 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
       </section>
 
       {/* ═══════════════════ ABOUT ═══════════════════ */}
-      <section className="py-16 px-8 bg-black text-white">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+      <section className="py-12 md:py-16 px-4 md:px-8 bg-black text-white">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
 
           {/* Image Stack */}
           <motion.div
-            className="relative h-[450px]"
+            className="relative h-[300px] sm:h-[400px] lg:h-[450px] mx-auto w-full max-w-[400px] lg:max-w-none"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
@@ -157,19 +157,19 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
               variants={fadeUp}
               custom={0}
               src="https://res.cloudinary.com/dad2siqxd/image/upload/v1774815723/mineandtechnology_hkecuh.jpg"
-              className="absolute w-72 h-96 object-cover rounded-2xl shadow-xl rotate-[-10deg] left-0 top-10"
+              className="absolute w-44 h-60 sm:w-56 sm:h-72 lg:w-72 lg:h-96 object-cover rounded-2xl shadow-xl rotate-[-10deg] left-0 top-10"
             />
             <motion.img
               variants={fadeUp}
               custom={0.15}
               src="https://res.cloudinary.com/dad2siqxd/image/upload/v1774815723/mine1_jfm1so.jpg"
-              className="absolute w-72 h-96 object-cover rounded-2xl shadow-xl rotate-[6deg] left-24 top-0"
+              className="absolute w-44 h-60 sm:w-56 sm:h-72 lg:w-72 lg:h-96 object-cover rounded-2xl shadow-xl rotate-[6deg] left-16 sm:left-20 lg:left-24 top-0"
             />
             <motion.img
               variants={fadeUp}
               custom={0.3}
               src="https://res.cloudinary.com/dad2siqxd/image/upload/v1774815723/mineai_qicn82.jpg"
-              className="absolute w-72 h-96 object-cover rounded-2xl shadow-xl rotate-[14deg] left-48 top-12"
+              className="absolute w-44 h-60 sm:w-56 sm:h-72 lg:w-72 lg:h-96 object-cover rounded-2xl shadow-xl rotate-[14deg] left-32 sm:left-40 lg:left-48 top-12"
             />
           </motion.div>
 
@@ -184,7 +184,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
               ABOUT PLATFORM
             </motion.div>
 
-            <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl md:text-5xl font-extrabold leading-tight">
+            <motion.h2 variants={fadeUp} custom={0.1} className="text-2xl sm:text-4xl md:text-5xl font-extrabold leading-tight">
               Transforming Mining Safety Through AI
             </motion.h2>
 
@@ -197,7 +197,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="grid grid-cols-2 gap-6 pt-4"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-4"
             >
               <motion.div variants={cardItem} className="p-6 rounded-xl text-white bg-transparent border border-white/10 hover:border-white/20 transition-colors">
                 <h4 className="font-bold text-lg mb-2">Our Vision</h4>
@@ -219,21 +219,21 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
       </section>
 
       {/* ═══════════════════ CORE CAPABILITIES ═══════════════════ */}
-      <section className="py-24 px-8 bg-black">
+      <section className="py-16 md:py-24 px-4 md:px-8 bg-black">
         <motion.div
           className="max-w-6xl mx-auto text-center mb-16"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.5 }}
         >
-          <motion.h2 variants={fadeUp} custom={0} className="text-4xl font-bold mb-4">Core Capabilities</motion.h2>
+          <motion.h2 variants={fadeUp} custom={0} className="text-2xl sm:text-4xl font-bold mb-4">Core Capabilities</motion.h2>
           <motion.p variants={fadeUp} custom={0.1} className="text-gray-400 max-w-2xl mx-auto">
             Built to digitize and analyze DGMS mining accident data using advanced AI techniques.
           </motion.p>
         </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto"
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
@@ -249,7 +249,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
               key={card.title}
               variants={cardItem}
               whileHover={{ y: -6, transition: { duration: 0.25 } }}
-              className="p-8 rounded-2xl bg-white/5 border border-white/10 shadow-[0_0_30px_rgba(255,140,0,0.15)] hover:shadow-[0_0_40px_rgba(255,140,0,0.25)] transition-shadow"
+              className="p-6 md:p-8 rounded-2xl bg-white/5 border border-white/10 shadow-[0_0_30px_rgba(255,140,0,0.15)] hover:shadow-[0_0_40px_rgba(255,140,0,0.25)] transition-shadow"
             >
               <card.Icon className="mb-4 text-primary w-6 h-6" />
               <h3 className="text-xl font-bold mb-2">{card.title}</h3>
@@ -260,8 +260,8 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
       </section>
 
       {/* ═══════════════════ AI SAFETY OFFICER ═══════════════════ */}
-      <section className="py-32 px-8 bg-gradient-to-b from-transparent to-black/40">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+      <section className="py-16 md:py-32 px-4 md:px-8 bg-gradient-to-b from-transparent to-black/40">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
 
           <motion.div
             className="space-y-6"
@@ -269,7 +269,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <motion.h2 variants={fadeUp} custom={0} className="text-4xl font-bold">Your AI Safety Officer</motion.h2>
+            <motion.h2 variants={fadeUp} custom={0} className="text-2xl sm:text-4xl font-bold">Your AI Safety Officer</motion.h2>
             <motion.p variants={fadeUp} custom={0.1} className="text-gray-400">
               Move beyond dashboards. Mine Agent acts as an intelligent assistant that understands, analyzes, and responds to mining safety data in real time.
             </motion.p>
@@ -316,7 +316,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
       </section>
 
       {/* ═══════════════════ CTA ═══════════════════ */}
-      <section className="relative py-24 px-8 text-center overflow-hidden">
+      <section className="relative py-16 md:py-24 px-4 md:px-8 text-center overflow-hidden">
         <video
           autoPlay
           loop
@@ -335,7 +335,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
           whileInView="visible"
           viewport={{ once: true, amount: 0.5 }}
         >
-          <motion.h2 variants={fadeUp} custom={0} className="text-4xl font-bold">
+          <motion.h2 variants={fadeUp} custom={0} className="text-2xl sm:text-4xl font-bold">
             Start Exploring Mine Safety Intelligence
           </motion.h2>
           <motion.p variants={fadeUp} custom={0.15} className="text-gray-400">
@@ -345,7 +345,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
           <motion.div variants={fadeUp} custom={0.3}>
             <button
               onClick={onLaunch}
-              className="px-10 py-4 rounded-xl bg-orange-500 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-[0_0_30px_rgba(255,140,0,0.3)] transition-all"
+              className="px-8 md:px-10 py-3 md:py-4 rounded-xl bg-orange-500 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-[0_0_30px_rgba(255,140,0,0.3)] transition-all text-sm md:text-base"
             >
               Chat with AI Safety Officer
             </button>

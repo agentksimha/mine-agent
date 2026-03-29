@@ -34,7 +34,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-black text-on-surface">
       <TopNavBar activeTab={activeTab} setActiveTab={setActiveTab} />
       
-      <main className={`flex-grow ${activeTab === 'home' ? '' : 'max-w-10xl mx-auto w-full px-40  pt-20'}`}>
+      <main className={`flex-grow ${activeTab === 'home' ? '' : 'max-w-10xl mx-auto w-full px-4 md:px-10 lg:px-20 xl:px-40 pt-20'}`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}

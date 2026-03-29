@@ -71,17 +71,17 @@ export const AuditScreen: React.FC = () => {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" style={{ zIndex: 1 }} />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-tertiary/5 rounded-full blur-[120px] pointer-events-none" style={{ zIndex: 1 }} />
 
-      <div className="w-full max-w-4xl px-8" style={{ zIndex: 10 }}>
+      <div className="w-full max-w-4xl px-4 md:px-8" style={{ zIndex: 10 }}>
         <header className="text-center mb-12">
          
-          <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight text-on-surface mb-4">Audit Intelligence</h1>
+          <h1 className="font-headline text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-on-surface mb-4">Audit Intelligence</h1>
           <p className="text-slate-400 font-body text-lg max-w-xl mx-auto">
             Generate high-fidelity safety compliance reports powered by real-time sensor data and historical incident logs.
           </p>
         </header>
 
         {/* Form Card */}
-        <div className="bg-surface-container-low rounded-xl p-8 md:p-12 shadow-2xl relative overflow-hidden group">
+        <div className="bg-surface-container-low rounded-xl p-5 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden group">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
 
             {/* State Input */}
@@ -131,7 +131,7 @@ export const AuditScreen: React.FC = () => {
           <button
             onClick={handleGenerate}
             disabled={isGenerating}
-            className="w-full bg-gradient-to-r from-primary to-primary-container py-5 rounded-xl text-on-primary font-headline font-bold text-lg tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+            className="w-full bg-gradient-to-r from-primary to-primary-container py-4 md:py-5 rounded-xl text-on-primary font-headline font-bold text-sm sm:text-lg tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
           >
             <Download className="w-6 h-6" />
             Generate & Download Audit Report
