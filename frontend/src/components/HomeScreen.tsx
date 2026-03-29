@@ -111,7 +111,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
               transition={{ delay: 0.3, duration: 0.7 }}
               className="block text-primary"
             >
-              Powered by Agentic AI
+              Powered by  AI
             </motion.span>
           </motion.h1>
 
