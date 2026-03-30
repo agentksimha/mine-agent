@@ -234,23 +234,6 @@ export const ChatScreen: React.FC = () => {
 
       {/* Input Area — pinned at bottom of container */}
       <div className="flex-shrink-0 py-4">
-        {/* Quick prompts */}
-        <div className="flex flex-wrap gap-2 mb-3 justify-center">
-          {[
-            'Methane accidents in 2021',
-            'Summarize recent incidents',
-            'Safety recommendations for underground mines'
-          ].map((query) => (
-            <button
-              key={query}
-              onClick={() => setInput(query)}
-              className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-[11px] font-medium text-slate-400 hover:text-white border border-white/10 hover:border-amber-500/30 transition-all"
-            >
-              {query}
-            </button>
-          ))}
-        </div>
-
         {/* Input field */}
         <div className="relative">
           <div className="absolute -inset-1 bg-amber-500/10 rounded-2xl blur-xl opacity-0 focus-within:opacity-100 transition-opacity pointer-events-none" />

@@ -61,8 +61,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({ activeTab, setActiveTab })
             ))}
           </nav>
         </ClickSpark>
-
-        {/* Right: Hamburger (mobile only) */}
+        
         <button
           className="md:hidden text-slate-300 hover:text-white transition-colors p-2"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

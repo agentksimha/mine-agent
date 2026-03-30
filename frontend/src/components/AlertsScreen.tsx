@@ -333,7 +333,7 @@ export const AlertsScreen: React.FC = () => {
                     
                     {/* Footer */}
                     <div className="px-8 py-4 bg-[#0A0A0B] border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-                      <span className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.2em]">Source: Directorate General of Mines Safety (DGMS)</span>
+                     
                       <a href={alert.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-slate-400 hover:text-white font-mono text-[11px] font-bold py-2 px-4 rounded transition-all hover:bg-white/5 border border-transparent hover:border-white/10">
                         VIEW ORIGINAL BULLETIN <ExternalLink className="w-3.5 h-3.5" />
                       </a>
