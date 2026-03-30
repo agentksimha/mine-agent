@@ -73,29 +73,17 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
 
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section className="relative min-h-screen flex items-center justify-center px-4 md:px-8">
-        <div className="absolute inset-0" style={{ zIndex: 0 }}>
-          <PixelBlast
-            variant="square"
-            pixelSize={4}
-            color="#FF8C00"
-            patternScale={2}
-            patternDensity={1}
-            pixelSizeJitter={0}
-            enableRipples
-            rippleSpeed={0.4}
-            rippleThickness={0.12}
-            rippleIntensityScale={1.5}
-            liquid={false}
-            liquidStrength={0.12}
-            liquidRadius={1.2}
-            liquidWobbleSpeed={5}
-            speed={0.5}
-            edgeFade={0.25}
-            transparent
-          />
-        </div>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ zIndex: 0 }}
+          src="https://res.cloudinary.com/dad2siqxd/video/upload/v1774816351/InShot_20251230_233754311_hx6gie.mp4"
+        />
 
-        <div className="absolute inset-0 bg-black/70" style={{ zIndex: 10 }} />
+        <div className="absolute inset-0 bg-black/60" style={{ zIndex: 10 }} />
 
         <div className="relative max-w-6xl w-full text-center space-y-8" style={{ zIndex: 20 }}>
           <motion.h1
@@ -109,7 +97,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.7 }}
-              className="block text-primary"
+              className="block text-orange-400"
             >
               Powered by  AI
             </motion.span>
@@ -317,15 +305,27 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
 
       {/* ═══════════════════ CTA ═══════════════════ */}
       <section className="relative py-16 md:py-24 px-4 md:px-8 text-center overflow-hidden">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ zIndex: 0 }}
-          src="https://res.cloudinary.com/dad2siqxd/video/upload/v1774816351/InShot_20251230_233754311_hx6gie.mp4"
-        />
+        <div className="absolute inset-0" style={{ zIndex: 0 }}>
+          <PixelBlast
+            variant="square"
+            pixelSize={4}
+            color="#FF8C00"
+            patternScale={2}
+            patternDensity={1}
+            pixelSizeJitter={0}
+            enableRipples
+            rippleSpeed={0.4}
+            rippleThickness={0.12}
+            rippleIntensityScale={1.5}
+            liquid={false}
+            liquidStrength={0.12}
+            liquidRadius={1.2}
+            liquidWobbleSpeed={5}
+            speed={0.5}
+            edgeFade={0.25}
+            transparent
+          />
+        </div>
         <div className="absolute inset-0 bg-black/70" style={{ zIndex: 1 }} />
 
         <motion.div

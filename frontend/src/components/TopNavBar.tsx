@@ -35,7 +35,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({ activeTab, setActiveTab })
       <div className="flex items-center justify-between w-full px-6 md:px-8 py-4 max-w-full mx-auto">
         {/* Left: Logo */}
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleNav('home')}>
-          <span className="text-xl font-bold tracking-tighter text-primary font-headline">
+          <span className="text-xl font-bold tracking-tighter text-orange-400 font-headline">
             MineRakshak
           </span>
         </div>
@@ -49,7 +49,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({ activeTab, setActiveTab })
                 onClick={() => setActiveTab(item.id)}
                 className={`font-headline text-sm font-medium tracking-wide transition-colors relative pb-1 ${
                   activeTab === item.id 
-                    ? 'text-primary' 
+                    ? 'text-orange-400' 
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
