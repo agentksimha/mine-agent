@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Particles from '../designs/particle';
+import { apiFetch } from '../services/api';
 
 interface AlertData {
   id: string;
@@ -163,14 +164,12 @@ const riskConfig = {
 export const AlertsScreen: React.FC = () => {
   const [alerts, setAlerts] = useState<AlertData[]>(sampleAlerts);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
-        const response = await fetch('https://krishnasimha-mine-agent.hf.space/updates');
-        if (!response.ok) {
-          throw new Error('Failed to fetch updates');
-        }
+        const response = await apiFetch('/updates');
         const data = await response.json();
         
         const updates = Array.isArray(data.updates) ? data.updates : [];
@@ -202,6 +201,7 @@ export const AlertsScreen: React.FC = () => {
         setAlerts([...parsedAlerts, ...sampleAlerts]);
       } catch (error) {
         console.error("Error fetching updates:", error);
+        setError(error instanceof Error ? error.message : 'Unable to load updates. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -231,7 +231,7 @@ export const AlertsScreen: React.FC = () => {
         {/* Header */}
         <div className="mb-12 max-w-4xl mx-auto flex flex-col items-center text-center">
           <p className="font-label text-xs uppercase tracking-widest text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.3)] mb-3 border border-[#00E5FF]/20 px-3 py-1 rounded bg-[#00E5FF]/5 inline-block">Live DGMS Monitoring</p>
-          <h1 className="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-slate-100">AI Safety Alerts</h1>
+          <h1 className="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-slate-100">Safety Updates</h1>
           <p className="text-slate-400 mt-4 max-w-2xl text-[15px]">Automated analysis of the latest DGMS official bulletins, ranked by risk factor and localized impact probability.</p>
         </div>
 
@@ -239,6 +239,13 @@ export const AlertsScreen: React.FC = () => {
           <div className="flex flex-col items-center justify-center py-32 space-y-6">
             <Loader2 className="w-12 h-12 text-[#00E5FF] animate-spin" />
             <p className="text-slate-400 font-medium tracking-wide">Fetching & Analyzing realtime DGMS bulletins...</p>
+          </div>
+        ) : error ? (
+          <div role="alert" className="mx-auto max-w-xl rounded-2xl border border-red-500/20 bg-red-500/10 p-8 text-center">
+            <AlertTriangle className="mx-auto mb-4 h-8 w-8 text-red-400" />
+            <h2 className="font-semibold text-red-200">Updates could not be loaded</h2>
+            <p className="mt-2 text-sm text-red-300/80">{error}</p>
+            <button onClick={() => window.location.reload()} className="mt-5 rounded-lg border border-red-500/30 px-4 py-2 text-sm text-red-200 hover:bg-red-500/10">Try again</button>
           </div>
         ) : (
           <div className="max-w-full mx-auto space-y-6">

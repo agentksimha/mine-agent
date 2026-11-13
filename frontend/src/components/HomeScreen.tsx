@@ -177,7 +177,7 @@ export const HomeScreen: React.FC<{ onLaunch: () => void }> = ({ onLaunch }) => 
             </motion.h2>
 
             <motion.p variants={fadeUp} custom={0.2} className="text-white-600 leading-relaxed">
-              Mine Agent leverages DGMS accident records (2016–2022) and advanced NLP techniques to digitize, analyze, and extract critical safety insights. The platform enables faster decision-making, improved hazard detection, and proactive risk management.
+              Mine Agent uses grounded safety records and advanced NLP techniques to digitize, analyze, and extract critical safety insights. The platform enables faster decision-making, improved hazard detection, and proactive risk management.
             </motion.p>
 
             <motion.div

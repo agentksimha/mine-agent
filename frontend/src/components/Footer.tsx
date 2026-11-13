@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
             MineRakshak
           </h2>
           <p className="text-sm text-slate-400 leading-relaxed">
-            An AI-powered mining safety intelligence platform that analyzes DGMS accident records (2016–2022) using NLP to deliver predictive hazard detection, real-time alerts, and automated audit reports.
+            An AI-powered mining safety intelligence platform that transforms safety records into grounded answers, timely updates, and automated audit reports.
           </p>
         </div>
 
@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
           <ul className="space-y-3">
             {[
               { icon: Brain, label: "AI Chatbot" },
-              { icon: AlertTriangle, label: "Risk Alerts" },
+              { icon: AlertTriangle, label: "Updates" },
               { icon: FileText, label: "Audit Reports" },
               { icon: Shield, label: "Safety Analysis" }
             ].map((item) => (

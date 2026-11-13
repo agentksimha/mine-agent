@@ -2,31 +2,27 @@ import React, { useState } from 'react';
 import { BarChart3, Download, FileText, Calendar, MapPin, AlertTriangle, ChevronDown } from 'lucide-react';
 import { motion } from 'motion/react';
 import LightRays from '../designs/light';
+import { apiFetch } from '../services/api';
 
 export const AuditScreen: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedState, setSelectedState] = useState('Western Australia');
   const [selectedYear, setSelectedYear] = useState('2024');
   const [selectedHazard, setSelectedHazard] = useState('All Major Hazards');
+  const [error, setError] = useState('');
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    setError('');
     try {
-      const response = await fetch('https://krishnasimha-mine-agent.hf.space/audit_report_pdf', {
+      const response = await apiFetch('/audit_report_pdf', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           state: selectedState,
           year: selectedYear,
           hazard_type: selectedHazard
         }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -39,7 +35,7 @@ export const AuditScreen: React.FC = () => {
       a.remove();
     } catch (error) {
       console.error('Error generating audit report:', error);
-      alert('Failed to generate audit report.');
+      setError(error instanceof Error ? error.message : 'Failed to generate the audit report.');
     } finally {
       setIsGenerating(false);
     }
@@ -136,6 +132,12 @@ export const AuditScreen: React.FC = () => {
             <Download className="w-6 h-6" />
             Generate & Download Audit Report
           </button>
+
+          {error && (
+            <div role="alert" className="mt-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm text-red-300">
+              {error}
+            </div>
+          )}
 
           {/* Loading Overlay */}
           {isGenerating && (

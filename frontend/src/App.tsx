@@ -10,10 +10,19 @@ import { HomeScreen } from './components/HomeScreen';
 import { ChatScreen } from './components/ChatScreen';
 import { AlertsScreen } from './components/AlertsScreen';
 import { AuditScreen } from './components/AuditScreen';
+import { AuthScreen } from './components/AuthScreen';
+import { useAuth } from './contexts/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
+  const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('home');
+
+  if (loading) {
+    return <div className="min-h-screen bg-black flex items-center justify-center text-amber-400">Restoring your session...</div>;
+  }
+
+  if (!user) return <AuthScreen />;
 
   const renderScreen = () => {
     switch (activeTab) {
